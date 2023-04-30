@@ -1,35 +1,23 @@
 """
-Views for the Coin API.
+Views for the coin APIs.
 """
 import requests
-from rest_framework import generics
-from rest_framework.pagination import PageNumberPagination
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
+
+
 from core.models import Coin
-from .serializers import CoinSerializer
+from coin import serializers
 
 
-class CoinList(generics.ListCreateAPIView):
-    queryset = Coin.objects.all()
-    serializer_class = CoinSerializer
-    pagination_class = PageNumberPagination
+class CoinListView(APIView):
+    """View for retrieving a list of coins."""
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
 
-    coins = []
-
-    def get(self, request, *args, **kwargs):
-        """Download data from coingecko"""
-        url = 'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd'
-        response = requests.get(url)
-        coins_data = response.json()
-
-        """Iterate through data and add it to database"""
-        for coin_data in coins_data:
-            coin = Coin.objects.create(
-                name=coin_data['name'],
-                symbol=coin_data['symbol'],
-                price=coin_data['current_price'],
-                market_cap=coin_data['market_cap']
-                )
-            coin.save()
-            self.coins.append(coin)
-
-        return self.list(request, *args, **kwargs)
+    def get(self, request):
+        coins = Coin.objects.get_list_of_coins()
+        serializer = serializers.CoinSerializer(coins, many=True)
+        return Response(serializer.data)
