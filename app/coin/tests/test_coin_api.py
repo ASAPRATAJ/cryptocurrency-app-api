@@ -1,8 +1,6 @@
 """
 Tests for coin API.
 """
-import requests
-
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
@@ -55,4 +53,3 @@ class PrivateCoinAPITests(TestCase):
 
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data, serializer.data)
-        
