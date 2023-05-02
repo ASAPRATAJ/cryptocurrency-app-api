@@ -12,4 +12,4 @@ class CoinSerializer(serializers.ModelSerializer):
     class Meta:
         model = Coin
         fields = ['id', 'coin_id', 'name', 'symbol', 'price']
-        read_only_fields = ['id']
+        read_only_fields = ['id', 'price']

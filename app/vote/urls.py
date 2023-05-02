@@ -1,5 +1,5 @@
 """
-URL mapping for the coin app.
+URL mapping for the vote app.
 """
 from django.urls import (
     path,
@@ -8,13 +8,13 @@ from django.urls import (
 
 from rest_framework.routers import DefaultRouter
 
-from coin import views
+from vote import views
 
 
 router = DefaultRouter()
-router.register('coins', views.CoinViewSet)
+router.register('votes', views.VoteViewSet)
 
-app_name = 'coin'
+app_name = 'vote'
 
 urlpatterns = [
     path('', include(router.urls)),

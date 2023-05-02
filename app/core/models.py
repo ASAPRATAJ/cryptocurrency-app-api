@@ -10,6 +10,7 @@ from django.contrib.auth.models import (
     BaseUserManager,
     PermissionsMixin,
 )
+from django.http import JsonResponse
 
 
 class UserManager(BaseUserManager):
@@ -42,36 +43,13 @@ class User(AbstractBaseUser, PermissionsMixin):
     gem_finder = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
-
+    votes_left = models.IntegerField(default=3)
     objects = UserManager()
 
     USERNAME_FIELD = 'email'
 
     def __str__(self):
         return self.email
-
-
-class CoinManager(models.Manager):
-    def get_list_of_coins(self):
-        response = requests.get('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd')
-        coin_data = response.json()
-        coins = []
-        for coin in coin_data:
-            coin_obj, created = Coin.objects.get_or_create(
-                coin_id=coin['id'],
-                defaults={
-                    'name': coin['name'],
-                    'symbol': coin['symbol'],
-                    'price': coin['current_price'],
-                }
-            )
-            if not created:
-                coin_obj.name = coin['name']
-                coin_obj.symbol = coin['symbol']
-                coin_obj.price = coin['current_price']
-                coin_obj.save()
-            coins.append(coin_obj)
-        return coins
 
 
 class Coin(models.Model):
@@ -81,7 +59,15 @@ class Coin(models.Model):
     symbol = models.CharField(max_length=10)
     price = models.FloatField(default=0)
 
-    objects = CoinManager()
-
     def __str__(self):
         return self.coin_id
+
+
+class Vote(models.Model):
+    """Vote object."""
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+    )
+    coin = models.ForeignKey(Coin, on_delete=models.CASCADE)
+    reason = models.TextField()
