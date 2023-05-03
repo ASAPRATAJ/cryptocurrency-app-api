@@ -1,8 +1,9 @@
+from django.core.exceptions import ValidationError
 from rest_framework import viewsets
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 
-from core.models import Vote
+from core.models import Vote, Coin
 
 from vote import serializers
 
@@ -21,4 +22,15 @@ class VoteViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         """Create a new vote."""
-        serializer.save(user=self.request.user)
+        user = self.request.user
+        if user.votes_left <= 0:
+            raise ValidationError("You have already used all your votes.")
+
+        coin = serializer.validated_data['coin']
+        existing_vote = Vote.objects.filter(user=user, coin=coin).first()
+        if existing_vote:
+            raise ValidationError("You have already voted for this coin.")
+
+        serializer.save(user=user)
+        user.votes_left -= 1
+        user.save()

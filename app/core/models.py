@@ -58,6 +58,7 @@ class Coin(models.Model):
     name = models.CharField(max_length=255)
     symbol = models.CharField(max_length=10)
     price = models.FloatField(default=0)
+    price_change_percentage = models.DecimalField(default=0, max_digits=5, decimal_places=2)
 
     def __str__(self):
         return self.coin_id
@@ -71,3 +72,6 @@ class Vote(models.Model):
     )
     coin = models.ForeignKey(Coin, on_delete=models.CASCADE)
     reason = models.TextField()
+
+    def __str__(self):
+        return f'{self.user} - {self.coin}'

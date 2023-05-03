@@ -14,7 +14,6 @@ from rest_framework import status
 
 import coin.apps
 from core import models
-from core.models import CoinManager
 
 
 # def retrieve_from_api(coin):
@@ -76,14 +75,40 @@ class ModelTests(TestCase):
         self.assertTrue(user.is_superuser)
         self.assertTrue(user.is_staff)
 
-    def test_retrieve_coins_from_coingecko(self):
-        """Test retrieving a list of coins from coingecko"""
+    def test_create_coin(self):
+        """Test creating a coin is successful."""
+        coin = models.Coin.objects.create(
+            coin_id='testcoin',
+            name='Testcoin',
+            symbol='TST',
+            price=100,
+            price_change_percentage=14.2,
+        )
+        self.assertEqual(str(coin), coin.coin_id)
 
-        coins = CoinManager().get_list_of_coins()
-        self.assertGreater(len(coins), 0)
-        print(len(coins))
-        for coin in coins:
-            self.assertTrue(hasattr(coin, 'coin_id'))
-            self.assertTrue(hasattr(coin, 'name'))
-            self.assertTrue(hasattr(coin, 'symbol'))
-            self.assertTrue(hasattr(coin, 'price'))
+    def test_create_vote(self):
+        """Test creating a vote is successful."""
+        user = get_user_model().objects.create_user(
+            'test@example.com',
+            'testpass123',
+        )
+
+        coin = models.Coin.objects.create(
+            coin_id='testcoin',
+            name='Testcoin',
+            symbol='TST',
+            price=100,
+            price_change_percentage=14.2,
+        )
+
+        vote = models.Vote.objects.create(
+            user=user,
+            coin=coin,
+            reason='Test reason',
+        )
+        self.assertEqual(str(coin), coin.coin_id)
+        self.assertEqual(str(vote), f'{vote.user} - {vote.coin}')
+        self.assertEqual(vote.user, user)
+        self.assertEqual(vote.coin, coin)
+        self.assertEqual(vote.reason, 'Test reason')
+        self.assertTrue(models.Vote.objects.exists())
