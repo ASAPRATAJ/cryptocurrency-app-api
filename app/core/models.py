@@ -71,6 +71,7 @@ class Vote(models.Model):
         on_delete=models.CASCADE,
     )
     coin = models.ForeignKey(Coin, on_delete=models.CASCADE)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
     reason = models.TextField()
 
     def __str__(self):
