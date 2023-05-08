@@ -1,4 +1,3 @@
-from _decimal import Decimal
 from datetime import datetime
 
 from django.core.exceptions import ValidationError
@@ -9,6 +8,7 @@ from rest_framework.permissions import IsAuthenticated
 from core.models import Vote, Coin
 
 from vote import serializers
+from app import cron
 
 
 class VoteViewSet(viewsets.ModelViewSet):
@@ -17,6 +17,8 @@ class VoteViewSet(viewsets.ModelViewSet):
     queryset = Vote.objects.all()
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
+    # cron.calculate_monthly_votes()
+    # cron.reset_votes_left()
 
     def get_serializer_class(self):
         if self.action == 'list':
@@ -28,8 +30,8 @@ class VoteViewSet(viewsets.ModelViewSet):
         """Create a new vote."""
         user = self.request.user
         date = datetime.now()
-        if date.day != 1:
-            raise ValidationError("You can only vote on the first day of the month.")
+        if date.day != 2:
+            raise ValidationError("You can only vote on the second day of the month.")
 
         if user.votes_left <= 0:
             raise ValidationError("You have already used all your votes.")
