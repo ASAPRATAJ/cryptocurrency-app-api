@@ -1,8 +1,10 @@
+"""Tasks to run with crontab."""
 from datetime import datetime, timedelta
 from core.models import Vote, Coin, User
 
 
 def calculate_monthly_votes():
+    """Calculate monthly votes and reward gem_finders with badge."""
     now = datetime.now()
     if now.day != 28:
         return  # Only run on the 1st day of the month
@@ -41,6 +43,7 @@ def calculate_monthly_votes():
 
 
 def reset_votes_left():
+    """Reset remaining votes."""
     now = datetime.now()
     if now.day != 1:
         return  # Only run on the 1st day of the month

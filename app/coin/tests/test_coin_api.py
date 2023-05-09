@@ -19,31 +19,31 @@ from coin.serializers import (
 COINS_URL = reverse('coin:coin-list')
 
 
-def detail_url(recipe_id):
+def detail_url(coin_id):
     """Create and return a coin detail URL"""
-    return reverse('coin:coin-detail', args=[recipe_id])
+    return reverse('coin:coin-detail', args=[coin_id])
 
 
 def get_coins(user):
-    """Get a list of coins from coingecko API."""
+    """Get coin data from CoinGecko API."""
     response = requests.get('https://api.coingecko.com/api/v3/coins/markets',
                             params={'vs_currency': 'usd',
                                     'sparkline': 'false',
-                                    'price_change_percentage': '24h'})
+                                    'price_change_percentage': '30d'})
     data = response.json()
 
-    # aktualizuj dane monet w bazie danych
-    for x in data:
-        coin, created = Coin.objects.get_or_create(coin_id=x['id'])
-        coin.name = x['name']
-        coin.symbol = x['symbol']
-        coin.price = x['current_price']
-        coin.price_change_percentage = x['price_change_percentage_24h']
-        coin.save()
+    for coin in data:
+        coin_data = {
+            'coin_id': coin['id'],
+            'name': coin['name'],
+            'symbol': coin['symbol'],
+            'price': coin['current_price'],
+            'price_change_percentage': coin.get('price_change_percentage_30d_in_currency')
+        }
+        Coin.objects.get_or_create(defaults=coin_data)
 
-    # zwróć listę aktualnych danych o monetach z bazy danych
-    queryset = Coin.objects.all()
-    return queryset.order_by('id')
+    queryset = Coin.objects.all().order_by('id')
+    return queryset
 
 
 class PublicCoinAPITests(TestCase):
@@ -64,30 +64,66 @@ class PrivateCoinAPITests(TestCase):
 
     def setUp(self):
         self.client = APIClient()
-        self.user = get_user_model().objects.create_user(
-            'test@example.com',
-            'testpass123',
-        )
+        self.user = get_user_model().objects.create_user(email='user@example.com', password='test123')
         self.client.force_authenticate(self.user)
+        self.coin = Coin.objects.create(coin_id='coin1', name='Coin 1', symbol='C1', price=10.0)
 
     def test_retrieving_coins(self):
         """Test retrieving a list of coins"""
-        get_coins(user=self.user)
+        coins = get_coins(user=self.user)
 
         res = self.client.get(COINS_URL)
 
-        coins = Coin.objects.all().order_by('id')
         serializer = CoinSerializer(coins, many=True)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data, serializer.data)
 
-    # def test_get_recipe_detail(self):
-    #     """Test get recipe detail"""
-    #     coin = self.coin
-    #     print(coin)
-    #
-    #     url = detail_url(coin.id)
-    #     res = self.client.get(url)
-    #
-    #     serializer = CoinDetailSerializer(coin)
-    #     self.assertEqual(res.data, serializer.data)
+    def test_get_coin_detail(self):
+        """Test retrieve coin details."""
+        coins = get_coins(user=self.user)
+
+        for coin in coins:
+            coin_id = coin.id
+            url = detail_url(coin_id)
+            res = self.client.get(url)
+            serializer = CoinDetailSerializer(coin)
+            self.assertEqual(res.data, serializer.data)
+
+    def test_delete_coin_denied(self):
+        """Test deleting a recipe is denied."""
+        coins = get_coins(user=self.user)
+
+        for coin in coins:
+            coin_id = coin.id
+            url = detail_url(coin_id)
+            res = self.client.delete(url)
+
+            self.assertEqual(res.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+            self.assertTrue(Coin.objects.filter(id=coin.id).exists())
+
+    def test_partial_update_coin_by_user_returns_error(self):
+        """Test changing the coin price by user results in an error."""
+        url = detail_url(self.coin.id)
+        payload = {'price': 20.0}
+
+        res = self.client.patch(url, payload)
+
+        self.coin.refresh_from_db()
+        self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertNotEqual(self.coin.price, payload['price'])
+
+    def test_full_update_coin_by_user_returns_error(self):
+        """Test changing the coin details by user results in an error."""
+        url = detail_url(self.coin.id)
+        payload = {
+            'coin_id': 'NewTestID',
+            'name': 'NewTestName',
+            'symbol': 'NTS',
+            'price': 100.0,
+        }
+        res = self.client.put(url, payload)
+
+        self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
+        self.coin.refresh_from_db()
+
+        self.assertNotEqual(self.coin.coin_id, payload['coin_id'])

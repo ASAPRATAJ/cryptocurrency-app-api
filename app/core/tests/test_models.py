@@ -104,10 +104,11 @@ class ModelTests(TestCase):
         vote = models.Vote.objects.create(
             user=user,
             coin=coin,
+            price=coin.price,
             reason='Test reason',
         )
         self.assertEqual(str(coin), coin.coin_id)
-        self.assertEqual(str(vote), f'{vote.user} - {vote.coin}')
+        self.assertEqual(str(vote), f'{vote.user} - {vote.coin} - {vote.created_at}')
         self.assertEqual(vote.user, user)
         self.assertEqual(vote.coin, coin)
         self.assertEqual(vote.reason, 'Test reason')
