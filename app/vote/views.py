@@ -10,7 +10,7 @@ from rest_framework.permissions import IsAuthenticated
 from core.models import Vote
 
 from vote import serializers
-from app import cron
+# from app import cron
 
 
 class VoteViewSet(viewsets.ModelViewSet):
