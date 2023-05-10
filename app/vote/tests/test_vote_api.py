@@ -154,5 +154,3 @@ class PrivateRecipeAPITests(TestCase):
         self.assertNotEqual(vote.coin, payload['coin'])
         self.assertNotEqual(vote.price, payload['price'])
         self.assertNotEqual(vote.reason, payload['reason'])
-
-

@@ -38,7 +38,9 @@ def get_coins(user):
             'name': coin['name'],
             'symbol': coin['symbol'],
             'price': coin['current_price'],
-            'price_change_percentage': coin.get('price_change_percentage_30d_in_currency')
+            'price_change_percentage': coin.get(
+                'price_change_percentage_30d_in_currency'
+            )
         }
         Coin.objects.get_or_create(defaults=coin_data)
 
@@ -64,9 +66,18 @@ class PrivateCoinAPITests(TestCase):
 
     def setUp(self):
         self.client = APIClient()
-        self.user = get_user_model().objects.create_user(email='user@example.com', password='test123')
+        self.user = get_user_model().objects.create_user(
+            email='user@example.com',
+            password='test123'
+        )
         self.client.force_authenticate(self.user)
-        self.coin = Coin.objects.create(coin_id='coin1', name='Coin 1', symbol='C1', price=10.0)
+
+        self.coin = Coin.objects.create(
+            coin_id='coin1',
+            name='Coin 1',
+            symbol='C1',
+            price=10.0
+        )
 
     def test_retrieving_coins(self):
         """Test retrieving a list of coins"""
@@ -98,7 +109,10 @@ class PrivateCoinAPITests(TestCase):
             url = detail_url(coin_id)
             res = self.client.delete(url)
 
-            self.assertEqual(res.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+            self.assertEqual(
+                res.status_code,
+                status.HTTP_405_METHOD_NOT_ALLOWED
+            )
             self.assertTrue(Coin.objects.filter(id=coin.id).exists())
 
     def test_partial_update_coin_by_user_returns_error(self):

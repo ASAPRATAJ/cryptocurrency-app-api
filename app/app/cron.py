@@ -8,8 +8,13 @@ def calculate_monthly_votes():
     today = datetime.date.today()
     first_day_of_month = datetime.date(today.year, today.month, 1)
     next_month = first_day_of_month.replace(day=28) + datetime.timedelta(days=4)
-    last_day_of_month = next_month - datetime.timedelta(days=next_month.day)
-    votes = Vote.objects.filter(created_at__gte=first_day_of_month, created_at__lte=last_day_of_month)
+    last_day_of_month = next_month - datetime.timedelta(
+        days=next_month.day
+    )
+    votes = Vote.objects.filter(
+        created_at__gte=first_day_of_month,
+        created_at__lte=last_day_of_month
+    )
 
     coins = Coin.objects.all()
     coin_prices = {coin.coin_id: coin.price for coin in coins}
@@ -25,17 +30,23 @@ def calculate_monthly_votes():
             current_price = coin_prices[coin.coin_id]
             percentage_change = ((current_price - vote_price) / vote_price) * 100
 
-            if coin.coin_id not in largest_changes or percentage_change > largest_changes[coin.coin_id]:
+            if coin.coin_id not in largest_changes \
+                    or percentage_change > largest_changes[coin.coin_id]:
                 largest_changes[coin.coin_id] = percentage_change
 
     if largest_changes:
         max_percentage_change = max(largest_changes.values())
-        coins_with_max_change = [coin_id for coin_id, percentage_change in largest_changes.items() if
-                                 percentage_change == max_percentage_change]
-        users_with_votes = Vote.objects.filter(coin__coin_id__in=coins_with_max_change,
-                                               created_at__gte=first_day_of_month,
-                                               created_at__lte=last_day_of_month).values_list('user',
-                                                                                              flat=True).distinct()
+
+        coins_with_max_change = \
+            [coin_id for coin_id, percentage_change in largest_changes.items() if
+             percentage_change == max_percentage_change]
+
+        users_with_votes = Vote.objects.filter(
+            coin__coin_id__in=coins_with_max_change,
+            created_at__gte=first_day_of_month,
+            created_at__lte=last_day_of_month
+        ).values_list('user', flat=True).distinct()
+
         users = User.objects.filter(id__in=users_with_votes)
         for user in users:
             user.gem_finder = True

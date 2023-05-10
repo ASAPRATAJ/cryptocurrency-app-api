@@ -55,13 +55,17 @@ class CoinViewSet(viewsets.ModelViewSet):
     def partial_update(self, request, *args, **kwargs):
         """Update coin data partially denied for normal user."""
         if not request.user.is_superuser:
-            raise PermissionDenied("You do not have permission to perform this action.")
+            raise PermissionDenied(
+                "You do not have permission to perform this action."
+            )
 
         return super().partial_update(request, *args, **kwargs)
 
     def update(self, request, *args, **kwargs):
         """Update coin data denied for normal user."""
         if not request.user.is_superuser:
-            raise PermissionDenied("You do not have permission to perform this action.")
+            raise PermissionDenied(
+                "You do not have permission to perform this action."
+            )
 
         return super().partial_update(request, *args, **kwargs)
