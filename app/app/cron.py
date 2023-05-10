@@ -7,7 +7,10 @@ def calculate_monthly_votes():
     """Calculate monthly votes and reward gem_finders with badge."""
     today = datetime.date.today()
     first_day_of_month = datetime.date(today.year, today.month, 1)
-    next_month = first_day_of_month.replace(day=28) + datetime.timedelta(days=4)
+
+    next_month = first_day_of_month.replace(day=28)\
+        + datetime.timedelta(days=4)
+
     last_day_of_month = next_month - datetime.timedelta(
         days=next_month.day
     )
@@ -28,7 +31,8 @@ def calculate_monthly_votes():
 
         if coin.coin_id in coin_prices:
             current_price = coin_prices[coin.coin_id]
-            percentage_change = ((current_price - vote_price) / vote_price) * 100
+            percentage_change = \
+                ((current_price - vote_price) / vote_price) * 100
 
             if coin.coin_id not in largest_changes \
                     or percentage_change > largest_changes[coin.coin_id]:
@@ -38,8 +42,8 @@ def calculate_monthly_votes():
         max_percentage_change = max(largest_changes.values())
 
         coins_with_max_change = \
-            [coin_id for coin_id, percentage_change in largest_changes.items() if
-             percentage_change == max_percentage_change]
+            [coin_id for coin_id, percentage_change in largest_changes.items()
+             if percentage_change == max_percentage_change]
 
         users_with_votes = Vote.objects.filter(
             coin__coin_id__in=coins_with_max_change,

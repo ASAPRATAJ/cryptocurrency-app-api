@@ -21,10 +21,12 @@ class CoinViewSet(viewsets.ModelViewSet):
 
     def list(self, request, *args, **kwargs):
         """Get coin data from CoinGecko API."""
-        response = requests.get('https://api.coingecko.com/api/v3/coins/markets',
-                                params={'vs_currency': 'usd',
-                                        'sparkline': 'false',
-                                        'price_change_percentage': '30d'})
+        response = requests.get(
+            'https://api.coingecko.com/api/v3/coins/markets',
+            params={'vs_currency': 'usd',
+                    'sparkline': 'false',
+                    'price_change_percentage': '30d'}
+        )
         data = response.json()
 
         for coin in data:
@@ -33,9 +35,15 @@ class CoinViewSet(viewsets.ModelViewSet):
                 'name': coin['name'],
                 'symbol': coin['symbol'],
                 'price': coin['current_price'],
-                'price_change_percentage': coin.get('price_change_percentage_30d_in_currency')
+                'price_change_percentage': coin.get(
+                    'price_change_percentage_30d_in_currency'
+                )
             }
-            Coin.objects.update_or_create(coin_id=coin['id'], defaults=coin_data)
+
+            Coin.objects.update_or_create(
+                coin_id=coin['id'],
+                defaults=coin_data
+            )
 
         queryset = Coin.objects.all().order_by('id')
         serializer = self.get_serializer(queryset, many=True)

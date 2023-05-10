@@ -49,7 +49,8 @@ class VoteViewSet(viewsets.ModelViewSet):
 
         if existing_vote:
             raise ValidationError(
-                "You have already voted for this coin. Please vote on another coin."
+                "You have already voted for this coin. "
+                "Please vote on another coin."
             )
 
         price = coin.price
