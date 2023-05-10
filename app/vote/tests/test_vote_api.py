@@ -1,5 +1,4 @@
 """Tests for the vote API."""
-import requests
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
@@ -155,5 +154,5 @@ class PrivateRecipeAPITests(TestCase):
         self.assertNotEqual(vote.coin, payload['coin'])
         self.assertNotEqual(vote.price, payload['price'])
         self.assertNotEqual(vote.reason, payload['reason'])
-        
+
 

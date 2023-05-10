@@ -2,7 +2,7 @@
 Views for the coin APIs.
 """
 import requests
-from rest_framework import viewsets, generics
+from rest_framework import viewsets
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.exceptions import MethodNotAllowed, PermissionDenied
 from rest_framework.permissions import IsAuthenticated

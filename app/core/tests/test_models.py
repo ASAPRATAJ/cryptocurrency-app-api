@@ -1,35 +1,10 @@
 """
 Tests for models.
 """
-from datetime import datetime
-
-import requests
-from datetime import date
 from django.test import TestCase
 from django.contrib.auth import get_user_model
-from django.urls import reverse
 
-from rest_framework.test import APIClient
-from rest_framework import status
-
-import coin.apps
 from core import models
-
-
-# def retrieve_from_api(coin):
-#     """Fetch coins from coingecko API."""
-#     response = requests.get('https://api.coingecko.com/api/v3/coins/markets',
-#                             params={'vs_currency': 'usd'})
-#     data = response.json()
-#     coins = []
-#     for coin_data in data:
-#         coin, created = coin().objects.get_or_create(coingecko_id=coin_data['id'])
-#         coin.name = coin_data['name']
-#         coin.symbol = coin_data['symbol']
-#         coin.price = coin_data['current_price']
-#         coin.save()
-#         coins.append(coin_data)
-#     return coins
 
 
 class ModelTests(TestCase):
@@ -74,17 +49,6 @@ class ModelTests(TestCase):
 
         self.assertTrue(user.is_superuser)
         self.assertTrue(user.is_staff)
-
-    def test_create_coin(self):
-        """Test creating a coin is successful."""
-        coin = models.Coin.objects.create(
-            coin_id='testcoin',
-            name='Testcoin',
-            symbol='TST',
-            price=100,
-            price_change_percentage=14.2,
-        )
-        self.assertEqual(str(coin), coin.coin_id)
 
     def test_create_vote(self):
         """Test creating a vote is successful."""

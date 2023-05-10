@@ -7,7 +7,7 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.permissions import IsAuthenticated
 
-from core.models import Vote, Coin
+from core.models import Vote
 
 from vote import serializers
 from app import cron
