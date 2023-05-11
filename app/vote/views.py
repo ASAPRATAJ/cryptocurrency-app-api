@@ -33,7 +33,7 @@ class VoteViewSet(viewsets.ModelViewSet):
         """Create new vote and update number of User votes_left."""
         user = self.request.user
         date = datetime.now()
-        if date.day != 10:
+        if date.day != 11:
             raise ValidationError(
                 "You can only vote on the second day of the month."
             )
