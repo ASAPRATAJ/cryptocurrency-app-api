@@ -88,6 +88,8 @@ class PrivateCoinAPITests(TestCase):
         serializer = CoinSerializer(coins, many=True)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data, serializer.data)
+        print(res.data)
+        print(serializer)
 
     def test_get_coin_detail(self):
         """Test retrieve coin details."""
