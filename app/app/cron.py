@@ -1,15 +1,52 @@
 """Tasks to run with crontab."""
 import datetime
-from core.models import Vote, Coin, User
 
+import requests
+from rest_framework.response import Response
+
+from coin import serializers
+from core.models import Vote, Coin, User
+from coin.views import CoinViewSet
+
+
+# def fetch_coin_data():
+#     """Get coin data from CoinGecko API."""
+#     response = requests.get(
+#         'https://api.coingecko.com/api/v3/coins/markets',
+#         params={'vs_currency': 'usd',
+#                 'sparkline': 'false',
+#                 'price_change_percentage': '30d'}
+#     )
+#     data = response.json()
+#
+#     for coin in data:
+#         coin_data = {
+#             'coin_id': coin['id'],
+#             'name': coin['name'],
+#             'symbol': coin['symbol'],
+#             'price': coin['current_price'],
+#             'price_change_percentage': coin.get(
+#                 'price_change_percentage_30d_in_currency'
+#             )
+#         }
+#
+#         Coin.objects.update_or_create(
+#             coin_id=coin['id'],
+#             defaults=coin_data
+#         )
+#
+#     queryset = Coin.objects.all().order_by('id')
+#     serializer = serializers.CoinSerializer(queryset, many=True)
+#     return Response(serializer.data)
+#
 
 def calculate_monthly_votes():
     """Calculate monthly votes and reward gem_finders with badge."""
     today = datetime.date.today()
     first_day_of_month = datetime.date(today.year, today.month, 1)
 
-    next_month = first_day_of_month.replace(day=28)\
-        + datetime.timedelta(days=4)
+    next_month = first_day_of_month.replace(day=28) \
+                 + datetime.timedelta(days=4)
 
     last_day_of_month = next_month - datetime.timedelta(
         days=next_month.day

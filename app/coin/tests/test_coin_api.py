@@ -88,8 +88,6 @@ class PrivateCoinAPITests(TestCase):
         serializer = CoinSerializer(coins, many=True)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data, serializer.data)
-        print(res.data)
-        print(serializer)
 
     def test_get_coin_detail(self):
         """Test retrieve coin details."""
@@ -103,7 +101,7 @@ class PrivateCoinAPITests(TestCase):
             self.assertEqual(res.data, serializer.data)
 
     def test_delete_coin_denied(self):
-        """Test deleting a recipe is denied."""
+        """Test deleting a coin is denied."""
         coins = get_coins(user=self.user)
 
         for coin in coins:
