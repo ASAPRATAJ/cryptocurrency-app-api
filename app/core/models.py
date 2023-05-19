@@ -57,8 +57,8 @@ class Coin(models.Model):
     price = models.FloatField(default=0)
     price_change_percentage = models.DecimalField(null=True,
                                                   default=0,
-                                                  max_digits=5,
-                                                  decimal_places=2)
+                                                  max_digits=8,
+                                                  decimal_places=4)
 
     def __str__(self):
         return self.coin_id

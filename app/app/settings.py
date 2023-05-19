@@ -44,7 +44,6 @@ INSTALLED_APPS = [
     'user',
     'coin',
     'vote',
-    'django_crontab',
     'corsheaders',
 ]
 
@@ -138,7 +137,7 @@ REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
-CRONJOBS = [
-    ('*/5 * * * *', 'app.cron.fetch_coin_data'),
-    ('21 26 * * *', 'app.cron.calculate_monthly_votes'),
-]
+CELERY_BROKER_URL = "redis://redis:6379"
+CELERY_RESULT_BACKEND = "redis://redis:6379"
+
+
