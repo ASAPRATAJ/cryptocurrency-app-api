@@ -4,9 +4,11 @@
 CoinGecko website. 
 * It allows users to vote for their preferred cryptocurrencies and provides features to track the 
 cryptocurrency with the highest percentage change based on the votes received. 
+* Every user has 3 votes.
+* User can vote only on the first day of the month.
 * The votes are counted on the last day of 
 each month.
-* Users who have voted for the winning cryptocurrency are awarded the "gem_finder" badge in their profile.__
+* Users who have voted for the winning cryptocurrency are awarded with the "gem_finder" badge in their profile.
 
 
 The application is containerized using Docker and utilizes PostgreSQL as the database. 
@@ -14,9 +16,11 @@ The following technologies are used in the development of this API:
 
 * Django
 * Django REST Framework
-* Cron (for scheduled tasks)
+* Django corsheaders (for controlling access to Django REST API from other domains or origins)
+* Celery (for scheduling tasks)
 * Docker
 * PostgreSQL
+* Psycopg2: (Python library for connecting to PostgreSQL databases)
 * Swagger (for OpenAPI schema)
 * CoinGecko API (for obtaining cryptocurrency data)
 
@@ -25,9 +29,7 @@ The following technologies are used in the development of this API:
 
 ### Coin:
 
-* __GET ' /api/coin/coins/ '__ : Retrieves a list of cryptocurrencies from CoinGecko.
-* __GET ' /api/coin/coins/{id}/ '__ : Displays details about a specific cryptocurrency.
-* __PUT/PATCH/DELETE ' /api/coin/coins/{id}/ '__ : Requests allowed only for users with superuser privileges.
+* __GET ' /api/coin/list/ '__ : Retrieves a list of cryptocurrencies from CoinGecko.
 
 ### User
 
@@ -35,7 +37,7 @@ The following technologies are used in the development of this API:
 * __GET ' /api/user/me/ '__ : Displays information about the currently logged-in user.
 * __PUT ' /api/user/me/ '__ : Allows updating information in the user's profile.
 * __PATCH ' /api/user/me/ '__ : Allows partial updates to the user's profile information.
-* __POST ' /api/user/token '__ : Generates a token that provides authentication credentials for the logged-in user.
+* __POST ' /api/user/token/ '__ : Generates a token that provides authentication credentials for the logged-in user.
 
 ### Vote
 
@@ -55,10 +57,10 @@ each endpoint.
 To run the API locally, follow these steps:
 
 1. Clone the repository.
-2. Install the required dependencies listed in the requirements.txt file.
-3. Set up the PostgreSQL database and configure the database settings.
-4. Build and run the Docker containers.
-5. Access the API endpoints using a tool like Postman or a web browser.
+2. Set up the PostgreSQL database and configure the database settings.
+3. Build and run the Docker containers.
+4. Access the API endpoints using a tool like Postman or a web browser. 
+The API endpoints will be available at http://localhost:8000/. You can send requests to this address to interact with the API.
 
 
 ## Contributing
