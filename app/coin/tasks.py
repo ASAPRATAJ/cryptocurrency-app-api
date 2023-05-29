@@ -1,6 +1,6 @@
-from coin.views import CoinView
-
 from celery import shared_task
+
+from coin.views import CoinView
 
 
 @shared_task

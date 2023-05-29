@@ -1,8 +1,6 @@
 """
 Tests for coin API.
 """
-import requests
-from coin import common
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
@@ -12,6 +10,7 @@ from rest_framework.test import APIClient
 
 from core.models import Coin
 
+from coin import common
 from coin.serializers import (
     CoinSerializer,
     CoinDetailSerializer,

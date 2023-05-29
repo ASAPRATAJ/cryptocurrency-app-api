@@ -1,8 +1,7 @@
 """Tasks to run with celery."""
-from operator import itemgetter
-
 from celery import shared_task
 from datetime import datetime
+from operator import itemgetter
 
 from core.models import Vote, Coin, User
 

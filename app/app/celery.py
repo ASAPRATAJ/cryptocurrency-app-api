@@ -2,11 +2,13 @@
 Configuration for celery.
 """
 import os
-from calendar import monthrange
-from datetime import datetime
 
 from celery import Celery
 from celery.schedules import crontab
+
+from calendar import monthrange
+from datetime import datetime
+
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'app.settings')
 
