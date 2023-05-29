@@ -2,6 +2,7 @@
 Tests for coin API.
 """
 import requests
+from coin import common
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
@@ -22,30 +23,6 @@ COINS_URL = reverse('coin:coin-list')
 def detail_url(coin_id):
     """Create and return a coin detail URL"""
     return reverse('coin:coin-detail', args=[coin_id])
-
-
-def get_coins(user):
-    """Get coin data from CoinGecko API."""
-    response = requests.get('https://api.coingecko.com/api/v3/coins/markets',
-                            params={'vs_currency': 'usd',
-                                    'sparkline': 'false',
-                                    'price_change_percentage': '30d'})
-    data = response.json()
-
-    for coin in data:
-        coin_data = {
-            'coin_id': coin['id'],
-            'name': coin['name'],
-            'symbol': coin['symbol'],
-            'price': coin['current_price'],
-            'price_change_percentage': coin.get(
-                'price_change_percentage_30d_in_currency'
-            )
-        }
-        Coin.objects.get_or_create(defaults=coin_data)
-
-    queryset = Coin.objects.all().order_by('id')
-    return queryset
 
 
 class PublicCoinAPITests(TestCase):
@@ -81,7 +58,7 @@ class PrivateCoinAPITests(TestCase):
 
     def test_retrieving_coins(self):
         """Test retrieving a list of coins"""
-        coins = get_coins(user=self.user)
+        coins = common.fetch_coin_data()
 
         res = self.client.get(COINS_URL)
 
@@ -91,7 +68,7 @@ class PrivateCoinAPITests(TestCase):
 
     def test_get_coin_detail(self):
         """Test retrieve coin details."""
-        coins = get_coins(user=self.user)
+        coins = common.fetch_coin_data()
 
         for coin in coins:
             coin_id = coin.id
@@ -102,7 +79,7 @@ class PrivateCoinAPITests(TestCase):
 
     def test_delete_coin_denied(self):
         """Test deleting a coin is denied."""
-        coins = get_coins(user=self.user)
+        coins = common.fetch_coin_data()
 
         for coin in coins:
             coin_id = coin.id

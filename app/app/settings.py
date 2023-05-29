@@ -37,14 +37,17 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'core',
+
+    'core',  # Main app of the project
+    'user',  # User-related application
+    'coin',  # Coin-related application
+    'vote',  # Vote-related application
+
+    'corsheaders',  # App for handling Cross-Origin Resource Sharing (CORS) headers
+
     'rest_framework',
     'rest_framework.authtoken',
     'drf_spectacular',
-    'user',
-    'coin',
-    'vote',
-    'corsheaders',
 ]
 
 MIDDLEWARE = [

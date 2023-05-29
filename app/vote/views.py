@@ -7,11 +7,9 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.permissions import IsAuthenticated
 
-from app import cron
 from core.models import Vote
 
 from vote import serializers
-# from app import cron
 
 
 class VoteViewSet(viewsets.ModelViewSet):
@@ -20,8 +18,6 @@ class VoteViewSet(viewsets.ModelViewSet):
     queryset = Vote.objects.all()
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
-    # cron.calculate_monthly_votes()
-    # cron.reset_votes_left()
 
     def get_serializer_class(self):
         """Return the serializer class for request."""
@@ -34,9 +30,9 @@ class VoteViewSet(viewsets.ModelViewSet):
         """Create new vote and update number of User votes_left."""
         user = self.request.user
         date = datetime.now()
-        if date.day != 11:
+        if date.day != 1:
             raise ValidationError(
-                "You can only vote on the second day of the month."
+                "You can only vote on the first day of the month."
             )
 
         if user.votes_left <= 0:
